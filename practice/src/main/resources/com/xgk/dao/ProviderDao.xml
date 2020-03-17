@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xgk.dao.ProviderDao">
+    <select id="findTotalCount" resultType="int">
+        select count(*) from smbms_provider;
+    </select>
+
+    <resultMap id="providerList" type="com.xgk.domain.Provider">
+        <id property="id" column="id"/>
+        <result property="proCode" column="proCode"/>
+        <result property="proName" column="proName"/>
+        <result property="proAddress" column="proAddress"/>
+        <result property="proPhone" column="proPhone"/>
+        <collection property="billList" ofType="com.xgk.domain.Bill">
+            <result property="billCode" column="billCode"/>
+            <result property="productName" column="productName"/>
+            <result property="totalPrice" column="totalPrice"/>
+            <result property="isPayment" column="isPayment"/>
+        </collection>
+    </resultMap>
+    <select id="findAllProvider" resultMap="providerList">
+        select p.id,p.proCode,p.proName,p.proAddress,p.proPhone,b.billCode,b.productName,b.totalPrice,b.isPayment
+        from smbms_provider p,smbms_bill b
+        where p.id = b.providerId
+    </select>
+
+    <select id="findAllProviderByCondition" resultType="com.xgk.domain.Provider">
+        select p.id,p.proCode,p.proName,p.proAddress,p.proPhone,p.proFax,p.creationDate
+        from smbms_provider p
+        <where>
+            <if test="proCode != null and proCode != ''">
+                AND p.proCode like CONCAT('%',#{proCode},'%')
+            </if>
+            <if test="proName != null and proName != ''">
+                AND p.proName like CONCAT('%',#{proName},'%')
+            </if>
+        </where>
+    </select>
+
+    <update id="updateProviderByCondition">
+     update smbms_provider s
+     <set>
+         <if test="proCode != null and proCode != ''">
+             ,s.proCode = #{proCode}
+         </if>
+         <if test="proName != null and proName != ''">
+             ,s.proName = #{proName}
+         </if>
+         <if test="proDesc != null and proDesc != ''">
+             ,s.proDesc = #{proDesc}
+         </if>
+         <if test="proContact != null and proContact != ''">
+             ,s.proContact = #{proContact}
+         </if>
+         <if test="proPhone != null and proPhone != ''">
+             ,s.proPhone = #{proPhone}
+         </if>
+         <if test="proAddress != null and proAddress != ''">
+             ,s.proAddress = #{proAddress}
+         </if>
+         <if test="proFax != null and proFax != ''">
+             ,s.proFax = #{proFax}
+         </if>
+     </set>
+     where id = #{id}
+    </update>
+
+    <update id="updateProviderByTrimCondition">
+        update smbms_provider s
+        <trim>
+            <if test="proCode != null and proCode != ''">
+                ,s.proCode = #{proCode}
+            </if>
+            <if test="proName != null and proName != ''">
+                ,s.proName = #{proName}
+            </if>
+            <if test="proDesc != null and proDesc != ''">
+                ,s.proDesc = #{proDesc}
+            </if>
+            <if test="proContact != null and proContact != ''">
+                ,s.proContact = #{proContact}
+            </if>
+            <if test="proPhone != null and proPhone != ''">
+                ,s.proPhone = #{proPhone}
+            </if>
+            <if test="proAddress != null and proAddress != ''">
+                ,s.proAddress = #{proAddress}
+            </if>
+            <if test="proFax != null and proFax != ''">
+                ,s.proFax = #{proFax}
+            </if>
+        </trim>
+        where id = #{id}
+    </update>
+    <select id="findAllProviderByChooseCondition" resultType="com.xgk.domain.Provider">
+        select p.id,p.proCode,p.proName,p.proAddress,p.proPhone,p.proFax,p.creationDate
+        from smbms_provider p
+        <choose>
+            <when test="proCode != null and proCode != ''">
+                AND p.proCode like CONCAT('%',#{proCode},'%')
+            </when>
+            <when test="proName != null and proName != ''">
+                AND p.proName like CONCAT('%',#{proName},'%')
+            </when>
+            <when test="proAddress != null and proAddress != ''">
+                AND p.proAddress like CONCAT('%',#{proAddress},'%')
+            </when>
+        </choose>
+    </select>
+</mapper>
